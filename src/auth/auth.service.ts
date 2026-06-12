@@ -17,7 +17,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -39,30 +39,32 @@ export class AuthService {
       messge: 'User created successfully',
     };
   }
-async createAdmin(registerDto: RegisterDto) {
-  const existUser = await this.userRepository.findOneBy({
-    email: registerDto.email,
-  });
-  if (existUser) {
-    throw new ConflictException('User already exists');
-  }
-  const hashedPassword = await this.hashPassword(registerDto.password);
-  const newlyCreatedUser = this.userRepository.create({
-    ...registerDto,
-    password: hashedPassword,
-    role: UserRole.ADMIN,
-  });
-  const savedUser = await this.userRepository.save(newlyCreatedUser);
-  const { password, ...result } = savedUser;
-  return {
-    user: result,
-    messge: 'User created successfully',
-  };
-}
-  async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findOneBy({
-      email: loginDto.email,
+  async createAdmin(registerDto: RegisterDto) {
+    const existUser = await this.userRepository.findOneBy({
+      email: registerDto.email,
     });
+    if (existUser) {
+      throw new ConflictException('User already exists');
+    }
+    const hashedPassword = await this.hashPassword(registerDto.password);
+    const newlyCreatedUser = this.userRepository.create({
+      ...registerDto,
+      password: hashedPassword,
+      role: UserRole.ADMIN,
+    });
+    const savedUser = await this.userRepository.save(newlyCreatedUser);
+    const { password, ...result } = savedUser;
+    return {
+      user: result,
+      messge: 'User created successfully',
+    };
+  }
+  async login(loginDto: LoginDto) {
+const user = await this.userRepository
+  .createQueryBuilder('user')
+  .addSelect('user.password')
+  .where('user.email = :email', { email: loginDto.email })
+  .getOne();
     if (!user) {
       throw new ConflictException('invalid credentials');
     }
@@ -85,7 +87,7 @@ async createAdmin(registerDto: RegisterDto) {
 
   async refreshTokens(refreshToken: string) {
     try {
-        console.log(refreshToken);
+      console.log(refreshToken);
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
@@ -105,8 +107,7 @@ async createAdmin(registerDto: RegisterDto) {
     }
   }
 
-
-  // get user by id 
+  // get user by id
   async getUserById(id: number): Promise<Omit<User, 'password'>> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
@@ -141,12 +142,12 @@ async createAdmin(registerDto: RegisterDto) {
       expiresIn: '15m',
     });
   }
-private generateRefreshToken(user: User) {
-  const payload = { sub: user.id };
+  private generateRefreshToken(user: User) {
+    const payload = { sub: user.id };
 
-  return this.jwtService.sign(payload, {
-    secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-    expiresIn: '7d',
-  });
-}
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: '7d',
+    });
+  }
 }

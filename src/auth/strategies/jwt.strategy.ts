@@ -1,8 +1,8 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { AuthService } from "../auth.service";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AuthService } from '../auth.service';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * JwtStrategy
@@ -31,7 +31,6 @@ import { ConfigService } from "@nestjs/config";
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  
   /**
    * Constructor
    * ---------------------------------------
@@ -40,7 +39,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    */
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {
     super({
       /**
@@ -86,7 +85,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      * (even if JWT itself is valid)
      */
     if (!user) {
-      throw new UnauthorizedException("Invalid token");
+      throw new UnauthorizedException('Invalid token');
     }
 
     /**
@@ -96,7 +95,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       id: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
   }
 }

@@ -1,8 +1,5 @@
-import { SetMetadata } from "@nestjs/common";
-import { UserRole } from "../entities/user.entity";
-
-
-
+import { SetMetadata } from '@nestjs/common';
+import { UserRole } from '../entities/user.entity';
 
 // this server as unique indentifier for storing and retrieving role requirements as a metadata
 export const ROLES_KEY = 'roles';

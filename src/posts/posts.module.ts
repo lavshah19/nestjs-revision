@@ -27,7 +27,7 @@ import { AuthModule } from 'src/auth/auth.module';
      * Without this, you CANNOT use Post repository in this module.
      */
     TypeOrmModule.forFeature([Post]),
-    AuthModule
+    AuthModule,
   ],
 
   /**

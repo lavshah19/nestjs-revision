@@ -1,34 +1,38 @@
-import { Post } from "src/posts/entities/post.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Post } from 'src/posts/entities/post.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export enum UserRole {
-    USER = "user",
-    ADMIN = "admin"
+  USER = 'user',
+  ADMIN = 'admin',
 }
-
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id:number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({unique : true})
-    email : string;
-    @Column()
-    name: string;
-    @Column()
-    password: string; // has pasword store garne 
-    @Column({type: "enum", enum: UserRole, default: UserRole.USER})
-    role: UserRole
+  @Column({ unique: true })
+  email: string;
+  @Column()
+  name: string;
+  @Column({ select: false })
+  password: string; // has pasword store garne
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole;
 
-    @OneToMany(()=> Post, (post) => post.authorName)
-    posts: Post[]
+  @OneToMany(() => Post, (post) => post.authorName)
+  posts: Post[];
 
-    @CreateDateColumn()
-    createdAt: Date
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt?: Date
-
-
+  @UpdateDateColumn()
+  updatedAt?: Date;
 }
