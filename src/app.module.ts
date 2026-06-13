@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
@@ -11,6 +11,9 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { FileEntity } from './file-upload/entities/file.enity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventsModule } from './events/events.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -45,13 +48,25 @@ import { FileEntity } from './file-upload/entities/file.enity';
       ],
     }),
     //isGlobal: true means you don't have to import ConfigModule in every module.
+    EventEmitterModule.forRoot({
+      global: true,
+      wildcard: false,
+      maxListeners: 15,
+      verboseMemoryLeak: true,
+    }),
     PostsModule,
 
     AuthModule,
 
     FileUploadModule,
+
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer:MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

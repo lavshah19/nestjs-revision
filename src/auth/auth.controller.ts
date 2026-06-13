@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -8,8 +8,11 @@ import { Roles } from './decorators/roles.decorators';
 import { UserRole } from './entities/user.entity';
 import { RolesGuard } from './guards/roles.guard';
 import { LoginThrottlerGuard } from './guards/login-throttler.guard';
+import { LoggingInterceptor } from 'src/common/interceptors/logging.interceptor';
 
 @Controller('auth')
+// @UseInterceptors(LoggingInterceptor)
+
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
